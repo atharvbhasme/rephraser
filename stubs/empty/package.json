@@ -1,0 +1,7 @@
+{
+  "name": "empty-stub",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Placeholder that replaces Node-only native packages (onnxruntime-node, sharp) pulled in by @huggingface/transformers. The app only uses the browser build, so these ~300 MB of native binaries are never needed.",
+  "main": "index.js"
+}
