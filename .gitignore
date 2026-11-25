@@ -5,3 +5,4 @@ public/ort
 *.part
 *.log
 .DS_Store
+test-data

@@ -25,6 +25,20 @@ export interface Issue {
   message: string;
   problem: string;
   suggestions: Suggestion[];
+  /**
+   * false = shown as a suggestion but NOT applied to the corrected text automatically
+   * (used when a fix is likely to be wrong, e.g. an unknown name). Default true.
+   */
+  auto?: boolean;
+  /** Which check produced it: "harper" or "rule:<name>" (used by the accuracy benchmark). */
+  source?: string;
+  /** For Rephraser's own rules: key used to remember "Ignore" (Harper issues use `index`). */
+  ignoreKey?: string;
+}
+
+/** The suggestion used in the corrected text when the user hasn't picked one: -1 = keep original. */
+export function defaultChoice(issue: Issue): number {
+  return issue.auto === false || issue.suggestions.length === 0 ? -1 : 0;
 }
 
 export const DIALECTS = ['American', 'British', 'Canadian', 'Australian', 'Indian'] as const;

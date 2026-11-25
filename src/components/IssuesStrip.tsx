@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import type { Choices } from '../lib/applyFixes';
 import { canAddToDictionary } from '../lib/dictionary';
-import { suggestionLabel, type Category, type Issue } from '../lib/issues';
+import { defaultChoice, suggestionLabel, type Category, type Issue } from '../lib/issues';
 
 interface Props {
   issues: Issue[];
@@ -90,7 +90,7 @@ export function IssuesStrip({
         ) : (
           <ul className="issue-list" ref={listRef}>
             {issues.map((issue) => {
-              const chosen = choices[issue.id] ?? 0;
+              const chosen = choices[issue.id] ?? defaultChoice(issue);
               return (
                 <li
                   key={issue.id}
@@ -131,7 +131,12 @@ export function IssuesStrip({
                       </button>
                       <span className="issue-kind">{issue.kind}</span>
                     </div>
-                    <p className="issue-msg">{issue.message}</p>
+                    <p className="issue-msg">
+                      {issue.message}
+                      {issue.auto === false && issue.suggestions.length > 0 && (
+                        <span className="not-auto"> Not changed automatically — pick a suggestion if it's right.</span>
+                      )}
+                    </p>
                   </div>
                   <div className="issue-actions">
                     {issue.category === 'spelling' && canAddToDictionary(issue.problem) && (

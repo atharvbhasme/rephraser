@@ -15,8 +15,9 @@
     "typecheck": "tsc -b",
     "postinstall": "node scripts/copy-ort-wasm.mjs",
     "check:system": "node scripts/check-system.mjs",
-    "setup:rephrase": "node scripts/setup-rephrase-model.mjs",
-    "remove:rephrase": "node scripts/remove-rephrase-model.mjs"
+    "setup:rephrase": "node scripts/setup-model.mjs rephrase",
+    "remove:rephrase": "node scripts/remove-model.mjs rephrase",
+    "eval": "vitest run --config vitest.eval.config.ts"
   },
   "dependencies": {
     "@huggingface/transformers": "4.3.2",

@@ -20,6 +20,11 @@ export interface CheckerState {
 
 const DEBOUNCE_MS = 300;
 
+/** True if a saved ignore list (Harper hashes and/or rule keys) has any entries. */
+function hasIgnoredEntries(json: string | null): boolean {
+  return !!json && (/\d{3,}/.test(json) || /"rules":\["/.test(json));
+}
+
 /**
  * Runs Harper in a Web Worker and re-checks `text` shortly after the user stops typing.
  * `words` is the personal dictionary; whenever it changes the worker is updated and the
@@ -44,7 +49,7 @@ export function useChecker(text: string, dialect: DialectName, words: string[]):
     ms: null,
   });
   const [error, setError] = useState<string | null>(null);
-  const [hasIgnored, setHasIgnored] = useState(() => /\d/.test(load<string | null>('ignored', null) ?? ''));
+  const [hasIgnored, setHasIgnored] = useState(() => hasIgnoredEntries(load<string | null>('ignored', null)));
 
   const send = useCallback((msg: CheckRequest) => workerRef.current?.postMessage(msg), []);
 
@@ -87,7 +92,7 @@ export function useChecker(text: string, dialect: DialectName, words: string[]):
           break;
         case 'ignored':
           save('ignored', msg.json);
-          setHasIgnored(/\d/.test(msg.json ?? ''));
+          setHasIgnored(hasIgnoredEntries(msg.json));
           break;
         case 'error':
           setError(msg.message);
@@ -135,7 +140,7 @@ export function useChecker(text: string, dialect: DialectName, words: string[]):
   const resultTextRef = useRef(result.text);
   resultTextRef.current = result.text;
   const ignore = useCallback(
-    (issue: Issue) => send({ type: 'ignore', text: resultTextRef.current, index: issue.index }),
+    (issue: Issue) => send({ type: 'ignore', text: resultTextRef.current, index: issue.index, key: issue.ignoreKey }),
     [send],
   );
 
