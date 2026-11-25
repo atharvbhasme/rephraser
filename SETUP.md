@@ -171,4 +171,10 @@ npm run dev -- --port 5174
 Click **Unload model** when you're done rephrasing, close other tabs, or rephrase shorter pieces of text.
 
 **Some mistakes aren't caught.**
-Spelling & Grammar uses fast built-in rules ([Harper](https://writewithharper.com)) instead of AI, so it stays light and offline. It catches common mistakes but not every complex grammar error.
+Spelling & Grammar uses fast built-in rules ([Harper](https://writewithharper.com) plus Rephraser's own rules) instead of AI, so it stays light and offline. It fixes spelling, capitals, punctuation, greetings and the most common grammar slips, but it doesn't rewrite sentences the way an AI assistant does. Some fixes are shown as suggestions only (for example unknown names): pick one in the list below the text if it's right.
+
+**It "corrects" my English spelling (colour → color, cancelled → canceled).**
+Choose your English at the top right (Indian, British, …). The first time, the app picks it from your browser's language.
+
+**How good is it on my own messages?**
+Put your own examples in `test-data/` (see `eval/parse.ts` for the format), then run `npm run eval`. It writes a report to `test-data/eval-report.md`. The `test-data/` folder is git-ignored so private messages are never committed.

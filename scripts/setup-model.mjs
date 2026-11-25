@@ -1,11 +1,12 @@
 #!/usr/bin/env node
 /**
- * One-time download of the small paraphrase model used by the Rephrase tab.
- * This is the ONLY step that uses the internet. After it finishes, the app runs offline.
+ * One-time download of an optional model (see models.json). This is the ONLY step that
+ * uses the internet. After it finishes, the app runs offline.
  *
- *   npm run setup:rephrase            # checks your system first, then downloads (~250 MB)
- *   npm run setup:rephrase -- --yes   # don't ask for confirmation
- *   npm run setup:rephrase -- --force # download even if the system check fails
+ *   npm run setup:rephrase            # Rephrase model (~240 MB)
+ *   npm run setup:grammar             # Deep grammar check model
+ *   … -- --yes                        # don't ask for confirmation
+ *   … -- --force                      # download even if the system check fails
  *
  * Interrupted? Just run it again: finished files are kept and partial files resume.
  */
@@ -15,11 +16,12 @@ import { dirname, join } from 'node:path';
 import { createInterface } from 'node:readline/promises';
 import { Readable } from 'node:stream';
 import { pipeline } from 'node:stream/promises';
-import { c, ICON, MODEL, printReport, ROOT, runSystemCheck } from './check-system.mjs';
+import { c, ICON, MODEL, MODEL_KEY, printReport, ROOT, runSystemCheck } from './check-system.mjs';
 
 const args = new Set(process.argv.slice(2));
 const FORCE = args.has('--force');
 const YES = args.has('--yes') || args.has('-y') || !process.stdin.isTTY;
+const SKIP_CHECK = args.has('--skip-check');
 const MODEL_DIR = join(ROOT, 'public', 'models', MODEL.id);
 const HUB = 'https://huggingface.co';
 const MB = 1024 ** 2;
@@ -34,9 +36,9 @@ const fmtTime = (s) => {
 
 async function main() {
   // 1. System check first — never download onto a machine that can't use it.
-  console.log(c.bold('\nStep 1/4 — Checking your system'));
+  console.log(c.bold(`\nStep 1/4 — Checking your system for: ${MODEL.label ?? MODEL_KEY}`));
   const check = await runSystemCheck();
-  printReport(check);
+  if (!SKIP_CHECK) printReport(check);
   if (check.verdict === 'fail' && !FORCE) {
     console.log(c.red('Stopped: nothing was downloaded.'), 'Use --force to download anyway.\n');
     process.exit(1);
@@ -121,9 +123,10 @@ async function main() {
     ),
   );
 
-  console.log(`\n${c.green(c.bold('✅ Rephrase is ready.'))} The app no longer needs the internet.`);
-  console.log(`   Refresh the browser (or run ${c.cyan('npm run dev')}) and open the ${c.bold('Rephrase')} tab.`);
-  console.log(c.dim(`   To remove the model later: npm run remove:rephrase\n`));
+  const label = MODEL.label ?? MODEL_KEY;
+  console.log(`\n${c.green(c.bold(`✅ ${label} is ready.`))} The app no longer needs the internet.`);
+  console.log(`   Refresh the browser (or run ${c.cyan('npm run dev')}) to use it.`);
+  console.log(c.dim(`   To remove the model later: node scripts/remove-model.mjs ${MODEL_KEY}\n`));
 }
 
 /* ------------------------------ helpers ------------------------------ */

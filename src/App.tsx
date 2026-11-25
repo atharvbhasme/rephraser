@@ -11,10 +11,23 @@ const RephraseTab = lazy(() => import('./components/RephraseTab'));
 
 type Tab = 'correct' | 'rephrase';
 
+/** First-visit default: the English variety of the browser's language (en-IN → Indian …). */
+function detectDialect(): DialectName {
+  const byRegion: Record<string, DialectName> = { IN: 'Indian', GB: 'British', UK: 'British', IE: 'British', AU: 'Australian', NZ: 'Australian', CA: 'Canadian' };
+  for (const lang of navigator.languages ?? [navigator.language]) {
+    const m = /^en-([A-Z]{2})/i.exec(lang ?? '');
+    if (m && byRegion[m[1].toUpperCase()]) return byRegion[m[1].toUpperCase()];
+    if (/^en/i.test(lang ?? '')) return 'American';
+  }
+  // Non-English browser languages common in India (hi, mr, ta, te, kn, bn …) → Indian English.
+  if ((navigator.languages ?? []).some((l) => /^(hi|mr|ta|te|kn|bn|gu|ml|pa|or)\b/i.test(l))) return 'Indian';
+  return 'American';
+}
+
 export function App() {
   const [tab, setTab] = useState<Tab>(() => load<Tab>('tab', 'correct'));
   const [visited, setVisited] = useState<Record<Tab, boolean>>({ correct: true, rephrase: tab === 'rephrase' });
-  const [dialect, setDialect] = useState<DialectName>(() => load<DialectName>('dialect', 'American'));
+  const [dialect, setDialect] = useState<DialectName>(() => load<DialectName>('dialect', detectDialect()));
   const [correctText, setCorrectText] = useState(() => load('draft', ''));
   const [rephraseText, setRephraseText] = useState(() => load('rephraseDraft', ''));
   const [issueCount, setIssueCount] = useState(0);

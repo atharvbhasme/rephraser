@@ -18,7 +18,14 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 
 export const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
-export const MODEL = JSON.parse(readFileSync(join(ROOT, 'rephrase-model.json'), 'utf8'));
+export const MODELS = JSON.parse(readFileSync(join(ROOT, 'models.json'), 'utf8'));
+/** Which model the command is about: `node scripts/x.mjs grammar` (default: rephrase). */
+export const MODEL_KEY = process.argv.slice(2).find((a) => !a.startsWith('-')) ?? 'rephrase';
+if (!MODELS[MODEL_KEY]) {
+  console.error(`Unknown model "${MODEL_KEY}". Choose one of: ${Object.keys(MODELS).join(', ')}`);
+  process.exit(1);
+}
+export const MODEL = MODELS[MODEL_KEY];
 
 const GB = 1024 ** 3;
 const MB = 1024 ** 2;

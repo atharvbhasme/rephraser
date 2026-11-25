@@ -1,4 +1,6 @@
-import model from '../../rephrase-model.json';
+import models from '../../models.json';
+
+const model = models.rephrase;
 
 export const MODEL_ID: string = model.id;
 export const MODEL_PROMPT: string = model.prompt;

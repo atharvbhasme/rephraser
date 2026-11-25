@@ -6,7 +6,7 @@ export type CheckRequest =
   | { type: 'setDialect'; dialect: DialectName }
   /** Replaces the whole personal dictionary (user words + enabled packs). */
   | { type: 'setWords'; words: string[] }
-  | { type: 'ignore'; text: string; index: number }
+  | { type: 'ignore'; text: string; index: number; key?: string }
   | { type: 'clearIgnored' };
 
 export type CheckResponse =

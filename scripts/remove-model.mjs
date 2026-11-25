@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-/** Deletes the downloaded rephrase model (frees ~250 MB). Spelling & grammar keep working. */
+/** Deletes a downloaded optional model: `node scripts/remove-model.mjs rephrase|grammar`. */
 import { existsSync, readdirSync, rmSync, statSync } from 'node:fs';
 import { join } from 'node:path';
 import { c, MODEL, ROOT } from './check-system.mjs';
@@ -21,5 +21,5 @@ for (const dir of targets) {
   rmSync(dir, { recursive: true, force: true });
   console.log(`Removed ${dir}`);
 }
-if (freed) console.log(c.green(`Freed ${(freed / 1024 ** 2).toFixed(0)} MB. Rephrase is now disabled; spelling & grammar still work.`));
-else console.log('No rephrase model is installed. Nothing to remove.');
+if (freed) console.log(c.green(`Freed ${(freed / 1024 ** 2).toFixed(0)} MB. ${MODEL.label} is now off; the basic spelling & grammar check still works.`));
+else console.log(`${MODEL.label} is not installed. Nothing to remove.`);

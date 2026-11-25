@@ -43,6 +43,12 @@ describe('Harper engine', () => {
     expect((await engine.check('The colour is nice.')).some((i) => i.problem === 'colour')).toBe(false);
     await engine.setDialect('American');
 
+    // Regression: changing the dialect must not re-enable the whole-sentence "long sentence"
+    // hint, which would hide every other mistake in long sentences.
+    const long =
+      'I have send you the leave request for tommorow, could you please check it once when you have time and also we will see what we can do about the other request that is pending with the team for a very long time now';
+    expect((await engine.check(long)).some((i) => i.problem === 'tommorow')).toBe(true);
+
     expect((await engine.check('Atharvv wrote it.')).length).toBe(1);
     await engine.addWords(['Atharvv']);
     expect((await engine.check('Atharvv wrote it.')).length).toBe(0);

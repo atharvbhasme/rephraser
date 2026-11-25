@@ -1,6 +1,6 @@
-import type { Issue } from './issues';
+import { defaultChoice, type Issue } from './issues';
 
-/** Which suggestion to use for each issue id. -1 means "leave as is". Missing = first suggestion. */
+/** Which suggestion to use for each issue id. -1 means "leave as is". Missing = the issue's default. */
 export type Choices = Record<string, number>;
 
 export interface Segment {
@@ -51,7 +51,7 @@ function toEdit(text: string, issue: Issue, choice: number): Edit | null {
 export function applyFixes(text: string, issues: Issue[], choices: Choices = {}): FixResult {
   const edits: Edit[] = [];
   for (const issue of issues) {
-    const choice = choices[issue.id] ?? 0;
+    const choice = choices[issue.id] ?? defaultChoice(issue);
     if (choice < 0) continue;
     const edit = toEdit(text, issue, choice);
     if (edit) edits.push(edit);

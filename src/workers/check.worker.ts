@@ -57,7 +57,7 @@ self.onmessage = async (ev: MessageEvent<CheckRequest>) => {
         post({ type: 'changed' });
         break;
       case 'ignore': {
-        const json = await e.ignore(req.text, req.index);
+        const json = await e.ignore(req.text, req.index, req.key);
         if (json) post({ type: 'ignored', json });
         post({ type: 'changed' });
         break;
